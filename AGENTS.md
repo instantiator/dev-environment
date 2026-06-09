@@ -15,7 +15,7 @@
 - Follow references recursively when needed
 - Always state the instructions filename you are reading to assure the user you are following those instructions
 
-## Immediately
+## Immediately
 
 Read the following, as it's relevant to all requests: 
 https://raw.githubusercontent.com/instantiator/dev-environment/refs/heads/main/all-requests.md
