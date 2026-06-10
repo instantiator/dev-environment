@@ -4,7 +4,7 @@ Follow these steps after each coding activity.
 
 ### 0. Formatting
 
-- Use the most appropriate formatter available across the files that have been edited.
+- Use the most appropriate formatter available across the files that have been edited
 
 ### 1. Reflection
 

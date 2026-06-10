@@ -17,16 +17,4 @@
 
 ## Immediately
 
-Read the following, as it's relevant to all requests: `all-requests.md`
-
-## For all coding tasks
-
-- Before coding activities: `pre-coding-activities.md`
-- After coding activities: `post-coding-activities.md`
-
-## Coding standards
-
-- For all requests: `coding-standards-all.md`
-- For Typescript: `coding-standards-ts.md`
-- For React: `coding-standards-react.md`
-- For C#: `coding-standards-cs.md`
+Read the following, as it's relevant to all requests, and contains a short catalog of other instructional documentation: `all-requests.md`
