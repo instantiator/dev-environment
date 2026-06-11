@@ -21,6 +21,9 @@ Follow these steps after each coding activity.
 ### 3. Testing
 
 - Run the tests to see if the current set of tests still pass
+  - Always run the unit tests
+  - Run all other test suites, where each is expected to take less than 1 minute
+  - For any remaining test suites, ask the user if you should run them
 - Consider the intent behind the code that changed, and any new code
 - Write or update tests for the new code, and for code that has been modified
 - Remove tests for code that no longer exists

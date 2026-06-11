@@ -7,8 +7,10 @@ Review these interventions before starting a coding task.
 If there are frameworks or libraries that can fulfil the intent of the request:
 
 - Check each listing on npm or Nuget or GitHub for: license, last update, number of downloads
+- Use a dependency checker like `npm audit` to review potential dependencies for known vulnerabilities
 - List each to the user, with these details
 - Make a recommendation: prefer permissive licenses, recent updates, high downloads, simplicity of implementation
+- Where possible, start with the most current version of a library or framework, provided there are no known vulnerabilities
 - Ask the user how to proceed
 
 ## Security
