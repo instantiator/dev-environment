@@ -21,3 +21,11 @@ Where not specified below, follow common conventions for the coding language in 
     ```
     // Validate inputs
     ```
+
+## Short testing loops
+
+- Where possible, group changes by their purpose
+- Favour short testing cycles - ie.
+  1. make a small group of changes
+  2. write tests and run them 
+  3. fix anything that fails, or move on to the next change
