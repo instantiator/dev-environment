@@ -17,6 +17,10 @@ Less is more. Aim for concise, readable code, and simple interfaces.
 - Before coding activities: `pre-coding-activities.md`
 - After coding activities: `post-coding-activities.md`
 
+## For fixes and improvements
+
+- Fixing issues: `fixing-issues.md`
+
 ## Coding standards
 
 - For all requests: `coding-standards-all.md`
