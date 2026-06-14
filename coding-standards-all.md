@@ -17,7 +17,7 @@ Where not specified below, follow common conventions for the coding language in 
   ```
   // ── Validate inputs ────────────────────────────────────────────────────────
   ```
-  - If helpful for clarity, break up the file with single line comments, eg
+  - If helpful for clarity, break up the file with single line comments, eg.
     ```
     // Validate inputs
     ```
