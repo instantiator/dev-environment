@@ -29,3 +29,11 @@ Where not specified below, follow common conventions for the coding language in 
   1. make a small group of changes
   2. write tests and run them 
   3. fix anything that fails, or move on to the next change
+
+## Dependencies (very important)
+
+Ensure that when adding a new dependency, you use the latest version that dependency. Check what's available. GitHub Actions often fall foul of this: Your training data could be outdated.
+
+Use the latest LTS version of Node, .NET, and any other frameworks that the project needs. Again, check what's available - your training data could be outdated.
+
+After including a dependency, don't automatically update it unless there are vulnerability reports (eg. from Dependabot, or `npm audit`), or a user request to do so, or a specific feature that's required from a later version, or because another dependency must update (for those reasons) and relies on it.

@@ -1,5 +1,7 @@
 # All requests
 
+Follow read the documents referenced here as needed.
+
 ## Working style
 
 Preparing a plan is a collaborative process. Present options to the user, discuss merits and drawbacks before committing to libraries, approaches, data structures, or key business logic.
