@@ -2,6 +2,11 @@
 
 Review these interventions before starting a coding task.
 
+## Ponytail
+
+Check if the `ponytail` plugin is installed. If not, install it, or ask the user to install it.
+Installation instructions are here: https://github.com/DietrichGebert/ponytail#install
+
 ## Libraries
 
 If there are frameworks or libraries that can fulfil the intent of the request:
