@@ -120,7 +120,13 @@ fi
 
 if [ "$FAST" = 0 ] && [ "$TYPE" = "node" ]; then
   if npx --no-install aislop --version >/dev/null 2>&1; then
-    run_stage "aislop" "fix reported slop (see guidance/standards/pitfalls.md)" npx --no-install aislop scan
+    # With a project config, use the ci command (score threshold, ratchetable);
+    # bare scan exits non-zero on any finding, including warnings-only.
+    if [ -f .aislop/config.yml ]; then
+      run_stage "aislop" "fix reported slop (see guidance/standards/pitfalls.md)" npx --no-install aislop ci
+    else
+      run_stage "aislop" "fix reported slop (see guidance/standards/pitfalls.md)" npx --no-install aislop scan
+    fi
   else
     record_result "aislop" SKIP "optional: npm i -D aislop, or npx aislop scan"
   fi
