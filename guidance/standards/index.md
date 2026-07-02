@@ -1,0 +1,15 @@
+---
+type: index
+title: Standards index
+description: Cross-language standards that apply to all code. Pick the file matching your current activity.
+tags: [standards, index]
+---
+
+# Standards
+
+- [common](common.md) — Non-negotiable rules for all code in any language. Read before any coding task.
+- [readability](readability.md) — How to structure code so developers can find and understand it. Read when creating files, modules, or refactoring.
+- [documentation](documentation.md) — How project documentation is organised and written. Read when writing or updating docs, or adding a feature that needs documenting.
+- [testing](testing.md) — How test suites are organised, named, and launched. Read when writing tests or setting up testing.
+- [dependencies](dependencies.md) — How to choose, add, and update dependencies safely. Read before adding or updating any dependency or framework.
+- [pitfalls](pitfalls.md) — Mistakes coding agents make repeatedly. Read during code review, or when check.sh or aislop report problems.

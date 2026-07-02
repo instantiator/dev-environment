@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Git pre-commit hook: runs the fast quality gate (format + lint + typecheck).
+# Installed by setup-hooks.sh. Kept fast on purpose, so nobody disables it.
+set -euo pipefail
+
+# Locate check.sh: next to this hook (core.hooksPath install), then in the
+# repo's dev-environment submodule (copied-hook install).
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+TOP="$(git rev-parse --show-toplevel)"
+for candidate in "$HOOK_DIR/../check.sh" "$TOP/dev-environment/scripts/check.sh"; do
+  if [ -f "$candidate" ]; then
+    exec bash "$candidate" --fast --project "$TOP"
+  fi
+done
+
+echo "pre-commit: dev-environment check.sh not found; skipping quality gate." >&2
+exit 0
