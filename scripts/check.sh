@@ -119,13 +119,13 @@ if find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' | gre
 fi
 
 if [ "$FAST" = 0 ] && [ "$TYPE" = "node" ]; then
-  if npx --no-install aislop --version >/dev/null 2>&1; then
+  if npx --yes aislop@latest --version >/dev/null 2>&1; then
     # With a project config, use the ci command (score threshold, ratchetable);
     # bare scan exits non-zero on any finding, including warnings-only.
     if [ -f .aislop/config.yml ]; then
-      run_stage "aislop" "fix reported slop (see guidance/standards/pitfalls.md)" npx --no-install aislop ci
+      run_stage "aislop" "fix reported slop (see guidance/standards/pitfalls.md)" npx --yes aislop@latest ci
     else
-      run_stage "aislop" "fix reported slop (see guidance/standards/pitfalls.md)" npx --no-install aislop scan
+      run_stage "aislop" "fix reported slop (see guidance/standards/pitfalls.md)" npx --yes aislop@latest scan
     fi
   else
     record_result "aislop" SKIP "optional: npm i -D aislop, or npx aislop scan"
