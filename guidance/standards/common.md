@@ -22,6 +22,30 @@ tags: [standards, all-languages]
 - Link to types and members mentioned in comments: `{@link TheType}` (TS/JS), `<see cref="MyClass.MyMethod"/>` (C#).
 - No decorative break comments (`// ── Validate ──────`); use a plain single-line comment (`// Validate inputs`) if a file needs breaking up.
 
+### Structuring a documentation comment
+
+Clarity beats brevity: a comment that costs a few more lines but separates its
+concepts is the better comment.
+
+- Open with a single short sentence saying what the thing *is*. Leave a blank line before anything else.
+- Give each further concept its own paragraph or list item, rather than running them together in one dense sentence.
+- Number the steps of anything sequential (stages, phases, fallbacks) as a list.
+- Never assume the reader can unpack a compressed term the code doesn't define: write "handles SIGINT in two stages", not "two-stage SIGINT".
+- Prefix a side note with `NB.` — used for caveats and guarantees about parameters or callers, as opposed to the thing's own purpose.
+
+```ts
+/**
+ * Plain readline loop (no TUI).
+ *
+ * Handles SIGINT in two stages:
+ * 1. During a turn, stop watching (the agent continues server-side).
+ * 2. At the idle prompt, clean up and exit.
+ *
+ * NB. `--company-id` without `--role-id` is rejected before this mode can
+ * ever be reached, so `rootAgentId` is guaranteed to be a real agent here.
+ */
+```
+
 ## Working in small steps
 
 - Group changes by purpose; make a small group of changes, test them, then move on (see [testing-loop](../process/testing-loop.md)).
