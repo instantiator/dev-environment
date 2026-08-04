@@ -27,12 +27,14 @@ After a coding task, on request ("review this"), or when the quality gate report
    - check each comment states intent and still matches the code;
    - confirm the code matches the stated intent of the task.
 4. Enforce the documented standards for the languages/frameworks involved (route via `guidance/index.md`).
-5. Check test coverage of the changed behaviour, including edge cases; add missing tests.
-6. Re-run `check.sh` after fixes.
+5. Review against `guidance/standards/principles.md`: the acceptance list (correctness, clarity, completeness, consistency), then the review lens (readability, maintainability, efficiency, reliability, security). Take the SOLID facets that suit the paradigm in front of you and skip the ones that don't.
+6. Where the code touches a database, check `guidance/standards/databases.md` — one transaction per atomic unit of work, parameterised queries, no partial writes on error.
+7. Check test coverage of the changed behaviour, including edge cases; add missing tests.
+8. Re-run `check.sh` after fixes. If this is the end of the work, run `check.sh --comprehensive` and review outstanding tasks (`guidance/process/outstanding-work.md`).
 
 ## Scripts
 
-- `dev-environment/scripts/check.sh`
+- `dev-environment/scripts/check.sh` (`--comprehensive` at the end of a task)
 - `npx aislop scan` (included in check.sh where available)
 
 ## Validate

@@ -15,17 +15,34 @@ has_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
-# Detect project type from marker files: prints "node", "dotnet", or "unknown"
-detect_project_type() {
+# Detect every stack present from marker files, one name per line.
+#
+# Prints any of "node", "dotnet", "python" — a polyglot repo prints several,
+# a repo with no recognised markers prints nothing.
+detect_stacks() {
   local dir="${1:-.}"
   if [ -f "$dir/package.json" ]; then
     echo "node"
-  elif ls "$dir"/*.sln >/dev/null 2>&1 || ls "$dir"/*.csproj >/dev/null 2>&1 \
+  fi
+  if ls "$dir"/*.sln >/dev/null 2>&1 || ls "$dir"/*.csproj >/dev/null 2>&1 \
     || ls "$dir"/*/*.csproj >/dev/null 2>&1; then
     echo "dotnet"
-  else
-    echo "unknown"
   fi
+  if [ -f "$dir/pyproject.toml" ] || [ -f "$dir/setup.py" ] \
+    || [ -f "$dir/requirements.txt" ]; then
+    echo "python"
+  fi
+  return 0
+}
+
+# Detect the primary project type: the first stack found, or "unknown".
+#
+# NB. Kept for callers that handle one stack at a time (run-tests.sh,
+# check-prereqs.sh); check.sh uses detect_stacks instead.
+detect_project_type() {
+  local first
+  first="$(detect_stacks "${1:-.}" | head -n 1)"
+  echo "${first:-unknown}"
 }
 
 # True if package.json in $1 declares an npm script named $2
@@ -66,7 +83,7 @@ report_results() {
       *)    colour="$C_YELLOW" ;;
     esac
     if [ -n "${RESULT_HINTS[$i]}" ]; then
-      printf "%s%-4s%s %-12s — %s\n" "$colour" "$state" "$C_RESET" "${RESULT_NAMES[$i]}" "${RESULT_HINTS[$i]}"
+      printf "%s%-4s%s %-18s — %s\n" "$colour" "$state" "$C_RESET" "${RESULT_NAMES[$i]}" "${RESULT_HINTS[$i]}"
     else
       printf "%s%-4s%s %s\n" "$colour" "$state" "$C_RESET" "${RESULT_NAMES[$i]}"
     fi

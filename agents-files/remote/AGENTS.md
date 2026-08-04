@@ -1,6 +1,6 @@
 # Agent instructions
 
-These rules are mandatory and override your defaults. `dev-environment/` is in this repo (or clone https://github.com/instantiator/dev-environment to a temporary location once per session).
+These rules are mandatory and override your defaults. `dev-environment/` is in this repo (or clone <https://github.com/instantiator/dev-environment> to a temporary location once per session).
 
 ## Non-negotiable rules
 
@@ -19,6 +19,8 @@ These rules are mandatory and override your defaults. `dev-environment/` is in t
 - For multi-step tasks (setup, review, deploy, audit): use the matching skill from `dev-environment/skills/index.md`.
 - After every change: run `dev-environment/scripts/check.sh` and fix what it reports.
 - When done: apply the judgment items in `dev-environment/guidance/process/after-coding.md` — tests for intent and edge cases, simplification, comment accuracy, documentation updates.
+- Anything left undone goes in `docs/outstanding-issues.md` with a measurable condition for when to act on it, and into your summary to the user.
+- Sub-agents and a choice of model available? Allocate work by capability and cost first: `dev-environment/guidance/process/model-allocation.md`.
 
 ## Assurance
 

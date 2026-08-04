@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# The quality gate. Detects the project type, then runs:
+# The quality gate. Detects every stack in the project, then runs:
 #   format check -> lint -> typecheck -> build -> unit tests -> aislop scan
 # and prints a PASS/FAIL/SKIP table with a fix-hint per failure.
 # Missing tools SKIP with an install hint; the gate never crashes on absence.
 #
-# Usage: check.sh [--fast] [--fix] [--suite <name>] [--project <dir>]
-#   --fast          skip build, tests, and aislop (used by the pre-commit hook)
-#   --fix           apply formatters/autofixes before checking
-#   --suite <name>  additionally run one test suite via run-tests.sh
-#   --project <dir> project directory (default: current directory)
+# Usage: check.sh [--fast|--comprehensive] [--fix] [--suite <name>] [--project <dir>]
+#   --fast           format + lint + typecheck only (used by the pre-commit hook)
+#   --comprehensive  the full gate plus every test suite and a security audit
+#   --fix            apply formatters/autofixes before checking
+#   --suite <name>   additionally run one test suite via run-tests.sh
+#   --project <dir>  project directory (default: current directory)
 # Exit code: 0 only when no stage FAILs.
 set -euo pipefail
 
@@ -17,23 +18,34 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib/common.sh
 . "$SCRIPT_DIR/lib/common.sh"
 
-FAST=0; FIX=0; SUITE=""; PROJECT="."
+FAST=0; COMPREHENSIVE=0; FIX=0; SUITE=""; PROJECT="."
 while [ $# -gt 0 ]; do
   case "$1" in
     --fast) FAST=1 ;;
+    --comprehensive) COMPREHENSIVE=1 ;;
     --fix) FIX=1 ;;
     --suite) SUITE="${2:?--suite needs a name}"; shift ;;
     --project) PROJECT="${2:?--project needs a directory}"; shift ;;
     --help|-h)
-      sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+      sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Unknown option: $1 (try --help)" >&2; exit 2 ;;
   esac
   shift
 done
+if [ "$FAST" = 1 ] && [ "$COMPREHENSIVE" = 1 ]; then
+  echo "--fast and --comprehensive are mutually exclusive" >&2; exit 2
+fi
 
 cd "$PROJECT"
-TYPE="$(detect_project_type .)"
-echo "check.sh — project type: $TYPE$( [ "$FAST" = 1 ] && echo ' (fast mode)')"
+STACKS="$(detect_stacks .)"
+MODE="full"
+if [ "$FAST" = 1 ]; then MODE="fast"; fi
+if [ "$COMPREHENSIVE" = 1 ]; then MODE="comprehensive"; fi
+echo "check.sh — stacks: $(echo "${STACKS:-none}" | tr '\n' ' ')($MODE mode)"
+
+# Prepended to each stack's stage names, so a polyglot repo's results table says
+# which toolchain produced each line. Empty when only one stack is present.
+STAGE_PREFIX=""
 
 # Run one stage and record the outcome: run_stage <name> <hint-on-fail> <command...>
 run_stage() {
@@ -47,78 +59,183 @@ run_stage() {
   fi
 }
 
-if [ "$TYPE" = "node" ]; then
-  # Apply autofixes first when asked
+# List the project's files matching a name pattern, skipping build output and
+# virtualenvs: list_files <find-name-pattern>
+list_files() {
+  find . -name "$1" \
+    -not -path './node_modules/*' -not -path './.git/*' \
+    -not -path './.venv/*' -not -path './venv/*' \
+    -not -path './bin/*' -not -path './obj/*'
+}
+
+# True if list_files would match anything
+has_files() {
+  list_files "$1" | grep -q .
+}
+
+check_node() {
   if [ "$FIX" = 1 ]; then
-    npm_has_script . format && run_stage "format-fix" "review formatter output" npm run format
-    npm_has_script . lint && run_stage "lint-fix" "review lint output" npm run lint
+    npm_has_script . format && run_stage "${STAGE_PREFIX}format-fix" "review formatter output" npm run format
+    npm_has_script . lint && run_stage "${STAGE_PREFIX}lint-fix" "review lint output" npm run lint
   fi
   # Format check (only when a dedicated check script exists; else lint covers it)
   if npm_has_script . "format:check"; then
-    run_stage "format" "run: npm run format" npm run format:check
+    run_stage "${STAGE_PREFIX}format" "run: npm run format" npm run format:check
   else
-    record_result "format" SKIP "no format:check script; assuming lint covers formatting"
+    record_result "${STAGE_PREFIX}format" SKIP "no format:check script; assuming lint covers formatting"
   fi
   # Lint (prefer a non-mutating script)
   if npm_has_script . "lint:check"; then
-    run_stage "lint" "run: npm run lint" npm run lint:check
+    run_stage "${STAGE_PREFIX}lint" "run: npm run lint" npm run lint:check
   elif npm_has_script . lint; then
-    run_stage "lint" "fix reported lint problems" npm run lint
+    run_stage "${STAGE_PREFIX}lint" "fix reported lint problems" npm run lint
   else
-    record_result "lint" SKIP "add a lint script (see guidance/languages/typescript.md)"
+    record_result "${STAGE_PREFIX}lint" SKIP "add a lint script (see guidance/languages/typescript.md)"
   fi
   # Typecheck
   if npm_has_script . typecheck; then
-    run_stage "typecheck" "fix reported type errors" npm run typecheck
+    run_stage "${STAGE_PREFIX}typecheck" "fix reported type errors" npm run typecheck
   elif [ -f tsconfig.json ]; then
-    run_stage "typecheck" "fix reported type errors" npx --no-install tsc --noEmit
+    run_stage "${STAGE_PREFIX}typecheck" "fix reported type errors" npx --no-install tsc --noEmit
   else
-    record_result "typecheck" SKIP "no typecheck script or tsconfig.json"
+    record_result "${STAGE_PREFIX}typecheck" SKIP "no typecheck script or tsconfig.json"
   fi
-  if [ "$FAST" = 0 ]; then
-    if npm_has_script . build; then
-      run_stage "build" "fix build errors/warnings" npm run build
-    else
-      record_result "build" SKIP "no build script"
-    fi
-    if npm_has_script . test; then
-      run_stage "unit-tests" "fix failing tests" npm test
-    else
-      record_result "unit-tests" SKIP "no test script (see guidance/standards/testing.md)"
-    fi
+  [ "$FAST" = 1 ] && return 0
+  if npm_has_script . build; then
+    run_stage "${STAGE_PREFIX}build" "fix build errors/warnings" npm run build
+  else
+    record_result "${STAGE_PREFIX}build" SKIP "no build script"
   fi
+  if npm_has_script . test; then
+    run_stage "${STAGE_PREFIX}unit-tests" "fix failing tests" npm test
+  else
+    record_result "${STAGE_PREFIX}unit-tests" SKIP "no test script (see guidance/standards/testing.md)"
+  fi
+  return 0
+}
 
-elif [ "$TYPE" = "dotnet" ]; then
+check_dotnet() {
   if ! has_cmd dotnet; then
-    record_result "dotnet" SKIP "install the .NET SDK (mac: brew install dotnet-sdk)"
+    record_result "${STAGE_PREFIX}dotnet" SKIP "install the .NET SDK (mac: brew install dotnet-sdk)"
+    return 0
+  fi
+  if [ "$FIX" = 1 ]; then
+    run_stage "${STAGE_PREFIX}format-fix" "review formatter output" dotnet format
+  fi
+  run_stage "${STAGE_PREFIX}format" "run: dotnet format" dotnet format --verify-no-changes
+  [ "$FAST" = 1 ] && return 0
+  # Analyzers run within the build, so build doubles as lint
+  run_stage "${STAGE_PREFIX}build" "fix build errors/warnings" dotnet build --nologo
+  run_stage "${STAGE_PREFIX}unit-tests" "fix failing tests" dotnet test --nologo
+  return 0
+}
+
+check_python() {
+  if ! has_cmd ruff; then
+    record_result "${STAGE_PREFIX}ruff" SKIP "install ruff (pip install ruff, or: brew install ruff)"
   else
     if [ "$FIX" = 1 ]; then
-      run_stage "format-fix" "review formatter output" dotnet format
+      run_stage "${STAGE_PREFIX}format-fix" "review formatter output" ruff format .
+      run_stage "${STAGE_PREFIX}lint-fix" "review lint output" ruff check --fix .
     fi
-    run_stage "format" "run: dotnet format" dotnet format --verify-no-changes
-    if [ "$FAST" = 0 ]; then
-      # Analyzers run within the build, so build doubles as lint
-      run_stage "build" "fix build errors/warnings" dotnet build --nologo
-      run_stage "unit-tests" "fix failing tests" dotnet test --nologo
-    fi
+    run_stage "${STAGE_PREFIX}format" "run: ruff format ." ruff format --check .
+    run_stage "${STAGE_PREFIX}lint" "fix reported problems (ruff check --fix . handles the easy ones)" ruff check .
   fi
+  # mypy is only useful once configured; without config, say so rather than
+  # failing a project that never opted into type checking
+  if ! has_cmd mypy; then
+    record_result "${STAGE_PREFIX}typecheck" SKIP "install mypy (pip install mypy)"
+  elif grep -q '^\[tool\.mypy\]' pyproject.toml 2>/dev/null \
+    || [ -f mypy.ini ] || [ -f .mypy.ini ]; then
+    run_stage "${STAGE_PREFIX}typecheck" "fix reported type errors" mypy .
+  else
+    record_result "${STAGE_PREFIX}typecheck" SKIP "add [tool.mypy] to pyproject.toml (see guidance/languages/python.md)"
+  fi
+  [ "$FAST" = 1 ] && return 0
+  if ! has_cmd pytest; then
+    record_result "${STAGE_PREFIX}unit-tests" SKIP "install pytest (pip install pytest)"
+  elif has_files 'test_*.py' || has_files '*_test.py'; then
+    run_stage "${STAGE_PREFIX}unit-tests" "fix failing tests" pytest
+  else
+    record_result "${STAGE_PREFIX}unit-tests" SKIP "no test files found (see guidance/standards/testing.md)"
+  fi
+  return 0
+}
 
-else
-  record_result "project" SKIP "no package.json or .csproj found; running generic checks only"
+audit_node() {
+  run_stage "audit:node" "run: npm audit fix (see guidance/standards/dependencies.md)" \
+    npm audit --audit-level=high
+}
+
+# dotnet list package --vulnerable exits 0 even when it finds vulnerabilities,
+# so the report is inspected rather than the exit code trusted
+audit_dotnet() {
+  local out
+  echo ""
+  echo "-- audit:dotnet: dotnet list package --vulnerable"
+  out="$(dotnet list package --vulnerable 2>&1)" || true
+  echo "$out"
+  if echo "$out" | grep -q 'has the following vulnerable packages'; then
+    record_result "audit:dotnet" FAIL "update the vulnerable packages listed above"
+  else
+    record_result "audit:dotnet" PASS
+  fi
+}
+
+audit_python() {
+  if has_cmd pip-audit; then
+    run_stage "audit:python" "update the vulnerable packages listed above" pip-audit
+  else
+    record_result "audit:python" SKIP "install pip-audit (pip install pip-audit)"
+  fi
+}
+
+# Per-stack checks
+if [ -z "$STACKS" ]; then
+  record_result "project" SKIP "no package.json, .csproj, or pyproject.toml found; running generic checks only"
 fi
+STACK_COUNT="$(echo "$STACKS" | grep -c . || true)"
+for stack in $STACKS; do
+  if [ "$STACK_COUNT" -gt 1 ]; then STAGE_PREFIX="$stack:"; fi
+  case "$stack" in
+    node) check_node ;;
+    dotnet) check_dotnet ;;
+    python) check_python ;;
+  esac
+done
+STAGE_PREFIX=""
 
-# Generic stages for any project type
-if find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*' | grep -q .; then
+# Generic stages, whatever the stack
+if has_files '*.sh'; then
   if has_cmd shellcheck; then
     # Word-splitting the file list is intended here
     # shellcheck disable=SC2046
-    run_stage "shellcheck" "fix shellcheck findings" shellcheck $(find . -name '*.sh' -not -path './node_modules/*' -not -path './.git/*')
+    run_stage "shellcheck" "fix shellcheck findings" shellcheck $(list_files '*.sh')
   else
     record_result "shellcheck" SKIP "install shellcheck (mac: brew install shellcheck)"
   fi
 fi
 
-if [ "$FAST" = 0 ] && [ "$TYPE" = "node" ]; then
+if has_files '*.md'; then
+  if has_cmd markdownlint; then
+    # The project's own config wins. Where it has none, use the config shipped
+    # here, which switches off the stylistic rules this guidance disagrees with.
+    MD_ARGS=""
+    if ! ls .markdownlint.json .markdownlint.jsonc .markdownlint.yaml .markdownlintrc \
+      >/dev/null 2>&1; then
+      MD_ARGS="--config $SCRIPT_DIR/../configs/markdownlint.json"
+    fi
+    # Word-splitting both the config flag and the file list is intended here
+    # shellcheck disable=SC2046,SC2086
+    run_stage "markdownlint" "fix reported markdown problems" \
+      markdownlint $MD_ARGS $(list_files '*.md')
+  else
+    record_result "markdownlint" SKIP "install markdownlint (npm i -g markdownlint-cli)"
+  fi
+fi
+
+# aislop covers 8 languages, so it runs for any stack — not just node
+if [ "$FAST" = 0 ]; then
   if npx --yes aislop@latest --version >/dev/null 2>&1; then
     # With a project config, use the ci command (score threshold, ratchetable);
     # bare scan exits non-zero on any finding, including warnings-only.
@@ -130,6 +247,18 @@ if [ "$FAST" = 0 ] && [ "$TYPE" = "node" ]; then
   else
     record_result "aislop" SKIP "optional: npm i -D aislop, or npx aislop scan"
   fi
+fi
+
+# Comprehensive mode: every test suite, then a security audit per stack
+if [ "$COMPREHENSIVE" = 1 ]; then
+  run_stage "all-suites" "fix the failing suite" "$SCRIPT_DIR/run-tests.sh" all
+  for stack in $STACKS; do
+    case "$stack" in
+      node) audit_node ;;
+      dotnet) if has_cmd dotnet; then audit_dotnet; fi ;;
+      python) audit_python ;;
+    esac
+  done
 fi
 
 # Optional extra suite

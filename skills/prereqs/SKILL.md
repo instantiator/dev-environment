@@ -19,14 +19,29 @@ A command fails because a tool is missing, or setting up a new machine/contribut
 
 ## Steps
 
-1. Run `dev-environment/scripts/check-prereqs.sh` — it detects the project type, checks each tool, and prints per-OS install commands for anything missing.
-2. With the user's go-ahead, run the printed install commands for the detected OS.
+1. Run `dev-environment/scripts/check-prereqs.sh` — it detects every stack present, checks each tool, and prints the install command for anything missing.
+2. Show the user what is missing and what installing it would run. With their go-ahead, either run the printed commands or re-run with `--install`, which runs them and re-checks.
 3. Re-run `check-prereqs.sh` until everything required is green.
 4. For project-specific tools the script doesn't know (check the project README), verify with `command -v` and install the same way.
 
+## Linters per language
+
+Every language in the repo needs its linter installed, or the quality gate SKIPs
+it and problems ship. The script checks these:
+
+| Stack | Tools |
+|-|-|
+| Node / TypeScript | node, npm (ESLint and Prettier come from the project's own dependencies) |
+| C# | the .NET SDK (analyzers and `dotnet format` ship with it) |
+| Python | ruff (required), mypy, pytest, pip-audit |
+| Shell | shellcheck |
+| Markdown | markdownlint |
+| Docker | hadolint |
+| CI workflows | actionlint |
+
 ## Scripts
 
-- `dev-environment/scripts/check-prereqs.sh` (does 90% of the work)
+- `dev-environment/scripts/check-prereqs.sh` (does 90% of the work); add `--install` to install what's missing.
 
 ## Validate
 

@@ -61,8 +61,16 @@ case "$TYPE" in
   dotnet)
     exec dotnet test --nologo
     ;;
+  python)
+    # pytest markers are the per-tier convention when there are no tier scripts
+    if [ "$SUITE" = "unit" ] && has_cmd pytest; then
+      exec pytest
+    elif has_cmd pytest; then
+      exec pytest -m "$SUITE"
+    fi
+    ;;
 esac
 
 echo "No runner found for suite '$SUITE' (looked for scripts/run-$SUITE-tests.sh," >&2
-echo "an npm 'test:$SUITE' script, or a dotnet project). See guidance/standards/testing.md." >&2
+echo "an npm 'test:$SUITE' script, or a dotnet/python project). See guidance/standards/testing.md." >&2
 exit 2

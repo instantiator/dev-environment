@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Git pre-commit hook: runs the fast quality gate (format + lint + typecheck).
+# Git pre-commit hook. Two stages, in this order:
+#   1. the fast quality gate (format + lint + typecheck)
+#   2. the project's own file-modifying steps, re-staged into the commit
 # Installed by setup-hooks.sh. Kept fast on purpose, so nobody disables it.
 set -euo pipefail
 
@@ -7,11 +9,53 @@ set -euo pipefail
 # repo's dev-environment submodule (copied-hook install).
 HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
 TOP="$(git rev-parse --show-toplevel)"
+CHECK=""
 for candidate in "$HOOK_DIR/../check.sh" "$TOP/dev-environment/scripts/check.sh"; do
-  if [ -f "$candidate" ]; then
-    exec bash "$candidate" --fast --project "$TOP"
-  fi
+  if [ -f "$candidate" ]; then CHECK="$candidate"; break; fi
 done
+if [ -z "$CHECK" ]; then
+  echo "pre-commit: dev-environment check.sh not found; skipping quality gate." >&2
+  exit 0
+fi
 
-echo "pre-commit: dev-environment check.sh not found; skipping quality gate." >&2
-exit 0
+# 1. Check first: no point regenerating anything for a commit that will fail
+bash "$CHECK" --fast --project "$TOP"
+
+# 2. Steps that rewrite files — formatting, generated docs, licence lists.
+#    The project owns this script; with no script there is nothing to do.
+#    NB. the full gate runs again at pre-push, which is what catches a fixup
+#    that leaves the tree failing.
+FIXUPS="$TOP/scripts/pre-commit-fixups.sh"
+[ -x "$FIXUPS" ] || exit 0
+
+# Record what was staged, and which of those files also have unstaged changes,
+# BEFORE running the fixups — afterwards the two are indistinguishable.
+STAGED="$(git diff --name-only --cached)"
+PARTIAL="$(git diff --name-only)"
+
+echo ""
+echo "pre-commit: running $FIXUPS"
+bash "$FIXUPS"
+
+# Re-stage only files that were already staged. A file staged with `git add -p`
+# has hunks its author deliberately held back; re-adding it wholesale would
+# commit them too, so those are left alone and named instead.
+HELD_BACK=""
+while read -r file; do
+  [ -n "$file" ] || continue
+  if printf '%s\n' "$PARTIAL" | grep -Fxq "$file"; then
+    HELD_BACK="$HELD_BACK
+$file"
+  else
+    git add -- "$file"
+  fi
+done <<EOF
+$STAGED
+EOF
+
+if [ -n "$HELD_BACK" ]; then
+  echo "" >&2
+  echo "pre-commit: these files were only partially staged, so any fixup changes" >&2
+  echo "to them are NOT in this commit — review and stage them yourself:" >&2
+  printf '%s\n' "$HELD_BACK" | sed '/^$/d; s/^/  /' >&2
+fi

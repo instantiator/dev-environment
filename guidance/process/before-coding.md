@@ -12,10 +12,14 @@ tags: [process, planning, security]
 - Preparing a plan is collaborative: present options to the user and discuss merits and drawbacks before committing to libraries, approaches, data structures, or key business logic.
 - Determine whether you have actually been asked to change code. If not, don't — even while exploring. Ask permission if you need to make changes and haven't been explicitly authorised.
 
+## Model allocation
+
+- If sub-agents are available and more than one model is, spend a moment on [model-allocation](model-allocation.md). Otherwise skip it and get on with the work.
+
 ## Ponytail
 
 - Check whether the `ponytail` plugin is installed; if not, install it or ask the user to
-  (instructions: https://github.com/DietrichGebert/ponytail#install).
+  (instructions: <https://github.com/DietrichGebert/ponytail#install>).
 
 ## Libraries and frameworks
 

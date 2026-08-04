@@ -5,7 +5,7 @@ description: Rules and tooling for C# code. Read when writing or reviewing .cs f
 tags: [csharp, dotnet, language]
 ---
 
-# C#
+# C# standards
 
 - Prefer fluent LINQ to keep code concise.
 - Use C# documentation comments (`///`) for methods, classes, interfaces, and public members; link with `<see cref="MyClass.MyMethod"/>`.

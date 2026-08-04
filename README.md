@@ -9,8 +9,9 @@ Guidance, skills, and scripts that help coding agents (Claude Code, OpenCode, or
 | `agents-files/` | Entry-point instructions to copy/merge into your project (`local/` for small-context agents, `remote/` for capable ones, plus a Claude Code variant) |
 | `guidance/` | Condensed standards and process docs, one topic per file, routed by `guidance/index.md` |
 | `skills/` | Step-by-step playbooks for multi-step tasks (project setup, CI, reviews, deploys, ADRs, ...), routed by `skills/index.md` |
-| `scripts/` | The automation: `check.sh` (quality gate), `run-tests.sh`, `check-prereqs.sh`, `setup-hooks.sh`, git hooks |
+| `scripts/` | The automation: `check.sh` (quality gate), `run-tests.sh`, `check-prereqs.sh`, `check-install.sh`, `setup-hooks.sh`, git hooks |
 | `adapters/` | Wiring for specific agent platforms (Claude Code skills + hooks, OpenCode) |
+| `configs/` | Shared tool config used by the gate when a project supplies none (currently markdownlint) |
 
 ## Install into a project
 
@@ -23,9 +24,25 @@ The installer is interactive: it asks which agent tier(s) and platforms you use,
 
 Prefer manual setup? Copy a file from `agents-files/` to your repo root, then run `./dev-environment/scripts/setup-hooks.sh`.
 
+## Keep it up to date
+
+```bash
+git submodule update --remote dev-environment && ./dev-environment/install.sh
+```
+
+`scripts/check-install.sh` reports what in your project has drifted from the checkout — an edited `CLAUDE.md`, copied hooks, a skill that is no longer a symlink — so you can merge rather than overwrite. The `update-latest` skill walks an agent through it.
+
 ## The quality gate
 
-`scripts/check.sh` detects your project type and runs format check → lint → typecheck → build → unit tests → `aislop scan`, printing PASS/FAIL with a fix-hint per failure. The git hooks run it automatically (`--fast` on commit, full on push) — so quality doesn't depend on anyone, human or model, remembering.
+`scripts/check.sh` detects every stack in your project — Node/TypeScript, .NET, Python, plus shell and markdown wherever they appear — and runs format check → lint → typecheck → build → unit tests → `aislop scan`, printing PASS/FAIL with a fix-hint per failure. Missing tools SKIP with an install command rather than breaking the run.
+
+| Mode | Adds | Run by |
+|-|-|-|
+| `--fast` | format, lint, typecheck | pre-commit hook, after each unit of work |
+| _(default)_ | build, unit tests, `aislop scan` | pre-push hook |
+| `--comprehensive` | every test suite, package security audit | you, after the last unit of work |
+
+The git hooks run the first two automatically, so quality doesn't depend on anyone, human or model, remembering. `pre-commit` also runs `scripts/pre-commit-fixups.sh` if your project has one — formatting, generated files, licence lists — and re-stages what it changed, leaving partially-staged files alone.
 
 ## Third party tools
 
