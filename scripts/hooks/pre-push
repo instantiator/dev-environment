@@ -4,14 +4,14 @@
 set -euo pipefail
 
 # Locate check.sh: next to this hook (core.hooksPath install), then in the
-# repo's dev-environment submodule (copied-hook install).
+# repo's dev-qual submodule (copied-hook install), then its pre-rename name.
 HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
 TOP="$(git rev-parse --show-toplevel)"
-for candidate in "$HOOK_DIR/../check.sh" "$TOP/dev-environment/scripts/check.sh"; do
+for candidate in "$HOOK_DIR/../check.sh" "$TOP/dev-qual/scripts/check.sh" "$TOP/dev-environment/scripts/check.sh"; do
   if [ -f "$candidate" ]; then
     exec bash "$candidate" --project "$TOP"
   fi
 done
 
-echo "pre-push: dev-environment check.sh not found; skipping quality gate." >&2
+echo "pre-push: dev-qual check.sh not found; skipping quality gate." >&2
 exit 0

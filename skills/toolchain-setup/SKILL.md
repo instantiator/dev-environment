@@ -29,7 +29,7 @@ New repo needing lint/format/typecheck; existing repo where tools are missing, i
 
 ## Scripts
 
-- `dev-environment/scripts/check.sh` as the acceptance test.
+- `dev-qual/scripts/check.sh` as the acceptance test.
 
 ## Validate
 

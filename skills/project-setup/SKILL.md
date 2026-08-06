@@ -27,15 +27,15 @@ Starting a new project or app, or the repo is empty apart from a README.
 3. Wire the toolchain (lint/format/typecheck scripts) — follow the `toolchain-setup` skill.
 4. Create per-suite test scripts for the chosen tiers — follow the `testing-setup` skill.
 5. Write a README: what the project is, how to run it, how to test it; create `docs/index.md`.
-6. Install guidance + hooks: run `dev-environment/install.sh` — or follow the `essential-behaviours` skill.
+6. Install guidance + hooks: run `dev-qual/install.sh` — or follow the `essential-behaviours` skill.
 
 ## Scripts
 
-- `dev-environment/scripts/check-prereqs.sh`
-- `dev-environment/install.sh`
+- `dev-qual/scripts/check-prereqs.sh`
+- `dev-qual/install.sh`
 
 ## Validate
 
-- `dev-environment/scripts/check.sh` passes on the fresh project.
+- `dev-qual/scripts/check.sh` passes on the fresh project.
 - README and `docs/index.md` exist and describe reality.
 - A trivial commit succeeds through the pre-commit hook.

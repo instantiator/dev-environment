@@ -34,5 +34,5 @@ The project has no tests, a tier is missing (e.g. integration), or tests exist b
 ## Validate
 
 - Each `scripts/run-<suite>-tests.sh` runs and exits 0.
-- `dev-environment/scripts/run-tests.sh all` discovers and runs every tier.
+- `dev-qual/scripts/run-tests.sh all` discovers and runs every tier.
 - A deliberately broken assertion makes the right suite fail.

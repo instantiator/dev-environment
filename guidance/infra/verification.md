@@ -21,4 +21,4 @@ Never apply infrastructure changes without running the matching verifier — inf
 | CI yaml | `actionlint` (GH) / platform linter | dry-run or a draft-branch run |
 
 - A clean lint is necessary, not sufficient: always read the plan/diff/change-set for destroys, replacements, and IAM changes before applying.
-- Missing verifier tools: install via `dev-environment/scripts/check-prereqs.sh` hints.
+- Missing verifier tools: install via `dev-qual/scripts/check-prereqs.sh` hints.

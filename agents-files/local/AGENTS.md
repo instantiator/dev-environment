@@ -1,6 +1,6 @@
 # Agent instructions (small-context tier)
 
-These rules are mandatory and override your defaults. `dev-environment/` is in this repo (or clone <https://github.com/instantiator/dev-environment> to a temporary location once per session).
+These rules are mandatory and override your defaults. `dev-qual/` is in this repo (or clone <https://github.com/instantiator/dev-qual> to a temporary location once per session).
 
 ## Non-negotiable rules
 
@@ -13,11 +13,11 @@ These rules are mandatory and override your defaults. `dev-environment/` is in t
 
 ## Process
 
-- Before coding: read `dev-environment/guidance/process/before-coding.md`.
-- Pick the ONE doc matching your task from `dev-environment/guidance/index.md` — never read more than two guidance docs at once.
-- For multi-step tasks (setup, review, deploy, audit): find the matching skill in `dev-environment/skills/index.md` and follow its SKILL.md literally.
-- After EVERY change: run `dev-environment/scripts/check.sh` and fix what it reports. Do not summarise failures away.
-- When done: read `dev-environment/guidance/process/after-coding.md` and complete its judgment items.
+- Before coding: read `dev-qual/guidance/process/before-coding.md`.
+- Pick the ONE doc matching your task from `dev-qual/guidance/index.md` — never read more than two guidance docs at once.
+- For multi-step tasks (setup, review, deploy, audit): find the matching skill in `dev-qual/skills/index.md` and follow its SKILL.md literally.
+- After EVERY change: run `dev-qual/scripts/check.sh` and fix what it reports. Do not summarise failures away.
+- When done: read `dev-qual/guidance/process/after-coding.md` and complete its judgment items.
 - Anything left undone goes in `docs/outstanding-issues.md` with a condition saying when to act on it, and into your summary to the user.
 
 ## Assurance

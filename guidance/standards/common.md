@@ -49,4 +49,4 @@ concepts is the better comment.
 ## Working in small steps
 
 - Group changes by purpose; make a small group of changes, test them, then move on (see [testing-loop](../process/testing-loop.md)).
-- After every change, run `scripts/check.sh` from dev-environment and fix what it reports.
+- After every change, run `scripts/check.sh` from dev-qual and fix what it reports.

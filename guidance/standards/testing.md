@@ -13,5 +13,5 @@ tags: [standards, testing]
 - Test the *intent* of the code: when the tests pass, the code demonstrably does the right thing — not just "the lines were executed".
 - Cover edge cases, not only the happy path.
 - Write or update tests for all new and modified code; remove tests for removed code.
-- `dev-environment/scripts/run-tests.sh <suite>` dispatches to these per-suite scripts automatically.
+- `dev-qual/scripts/run-tests.sh <suite>` dispatches to these per-suite scripts automatically.
 - When and how often to run which suite: [testing-loop](../process/testing-loop.md).

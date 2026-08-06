@@ -9,7 +9,7 @@ tags: [process, quality, testing]
 
 ## 1. Run the quality gate
 
-Run `dev-environment/scripts/check.sh`. It formats, lints, typechecks, builds, runs unit tests, and runs `npx aislop scan` where available, and prints a fix-hint for every failure.
+Run `dev-qual/scripts/check.sh`. It formats, lints, typechecks, builds, runs unit tests, and runs `npx aislop scan` where available, and prints a fix-hint for every failure.
 
 - Fix what it reports until it passes. Do not summarise failures away or defer them. Re-run the gate after every fix it prompted.
 - After the *last* unit of work in a task, run `check.sh --comprehensive` instead — it adds every test suite and a package security audit ([testing-loop](testing-loop.md)).

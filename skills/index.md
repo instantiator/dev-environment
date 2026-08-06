@@ -18,4 +18,4 @@ tags: [skills, index]
 - [prereqs](prereqs/SKILL.md) — Check and install the tools a project needs. Use on a fresh machine, at onboarding, or when a required tool is missing.
 - [essential-behaviours](essential-behaviours/SKILL.md) — Install the enforcement that makes key behaviours automatic. Use at project onboarding, or when asked to make sure something always happens.
 - [adr](adr/SKILL.md) — Think through and record an architectural decision. Use when making architecture, infrastructure, or significant design choices.
-- [update-latest](update-latest/SKILL.md) — Bring a project's installed guidance, skills, scripts, and hooks up to date without losing customisations. Use when the dev-environment submodule has moved on, or setup looks stale.
+- [update-latest](update-latest/SKILL.md) — Bring a project's installed guidance, skills, scripts, and hooks up to date without losing customisations. Use when the dev-qual submodule has moved on, or setup looks stale.

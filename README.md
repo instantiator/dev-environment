@@ -1,4 +1,4 @@
-# dev-environment
+# dev-qual
 
 Guidance, skills, and scripts that help coding agents (Claude Code, OpenCode, or any other) deliver consistently high-quality code — designed so that even small-context models can complete features and fixes to a high standard.
 
@@ -16,18 +16,26 @@ Guidance, skills, and scripts that help coding agents (Claude Code, OpenCode, or
 ## Install into a project
 
 ```bash
-git submodule add https://github.com/instantiator/dev-environment
-./dev-environment/install.sh
+git submodule add https://github.com/instantiator/dev-qual
+./dev-qual/install.sh
 ```
 
 The installer is interactive: it asks which agent tier(s) and platforms you use, merges entry files into your repo (never clobbering existing AGENTS.md/CLAUDE.md), and offers to install the git hooks that run the quality gate on commit and push. Re-run it any time.
 
-Prefer manual setup? Copy a file from `agents-files/` to your repo root, then run `./dev-environment/scripts/setup-hooks.sh`.
+Prefer manual setup? Copy a file from `agents-files/` to your repo root, then run `./dev-qual/scripts/setup-hooks.sh`.
 
 ## Keep it up to date
 
 ```bash
-git submodule update --remote dev-environment && ./dev-environment/install.sh
+git submodule update --remote dev-qual && ./dev-qual/install.sh
+```
+
+Installed before the rename, as `dev-environment`? Move the submodule and re-run the installer — it replaces the old marker block rather than duplicating it:
+
+```bash
+git mv dev-environment dev-qual
+git submodule set-url dev-qual https://github.com/instantiator/dev-qual.git
+./dev-qual/install.sh
 ```
 
 `scripts/check-install.sh` reports what in your project has drifted from the checkout — an edited `CLAUDE.md`, copied hooks, a skill that is no longer a symlink — so you can merge rather than overwrite. The `update-latest` skill walks an agent through it.

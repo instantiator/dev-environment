@@ -28,7 +28,7 @@ After completing a feature or fix, or when asked to review/update documentation.
 
 ## Scripts
 
-- `markdownlint` where available; for this guidance repo itself, `dev-environment/scripts/lint-docs.sh`.
+- `markdownlint` where available; for this guidance repo itself, `dev-qual/scripts/lint-docs.sh`.
 
 ## Validate
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reports how a project's installed dev-environment files differ from this
+# Reports how a project's installed dev-qual files differ from this
 # checkout — the drift that builds up after `git submodule update`.
 #
 # PASS = matches this checkout. FAIL = differs (upstream moved, or you
@@ -29,12 +29,13 @@ done
 
 echo "check-install.sh — comparing $PROJECT against $REPO"
 
-# Print the content between a pair of markers: block_between <file> <start> <end>
+# Print the content between a pair of marker patterns:
+# block_between <file> <start-regex> <end-regex>
 block_between() {
   awk -v s="$2" -v e="$3" '
-    $0 == e { inside = 0 }
+    $0 ~ e { inside = 0 }
     inside { print }
-    $0 == s { inside = 1 }
+    $0 ~ s { inside = 1 }
   ' "$1"
 }
 
@@ -42,10 +43,12 @@ block_between() {
 AGENTS="$PROJECT/AGENTS.md"
 if [ ! -f "$AGENTS" ]; then
   record_result "AGENTS.md" SKIP "not installed — run install.sh"
-elif ! grep -q '<!-- dev-environment:start -->' "$AGENTS"; then
-  record_result "AGENTS.md" SKIP "no dev-environment block — run install.sh"
+elif ! grep -qE '<!-- dev-(qual|environment):start -->' "$AGENTS"; then
+  record_result "AGENTS.md" SKIP "no dev-qual block — run install.sh"
 else
-  installed="$(block_between "$AGENTS" '<!-- dev-environment:start -->' '<!-- dev-environment:end -->')"
+  # dev-environment is the pre-rename marker: a block still using it will not
+  # match either tier file, so it is reported as drift to be re-installed.
+  installed="$(block_between "$AGENTS" '<!-- dev-(qual|environment):start -->' '<!-- dev-(qual|environment):end -->')"
   matched=""
   for tier in local remote; do
     if [ "$installed" = "$(cat "$REPO/agents-files/$tier/AGENTS.md")" ]; then
@@ -61,7 +64,7 @@ else
 fi
 
 # 2. The OpenCode skills routing block: every current skill must be listed
-if [ -f "$AGENTS" ] && grep -q '<!-- dev-environment:skills:start -->' "$AGENTS"; then
+if [ -f "$AGENTS" ] && grep -qE '<!-- dev-(qual|environment):skills:start -->' "$AGENTS"; then
   missing=""
   while read -r line; do
     name="${line#- [}"; name="${name%%]*}"

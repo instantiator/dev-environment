@@ -30,7 +30,7 @@ The repo has no CI, or CI needs extending to cover the quality gate.
 
 ## Scripts
 
-- `actionlint` (install hint via `dev-environment/scripts/check-prereqs.sh`)
+- `actionlint` (install hint via `dev-qual/scripts/check-prereqs.sh`)
 
 ## Validate
 

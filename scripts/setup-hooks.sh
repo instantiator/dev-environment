@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs the dev-environment git hooks (pre-commit, pre-push) into a project,
+# Installs the dev-qual git hooks (pre-commit, pre-push) into a project,
 # by pointing core.hooksPath at this repo's hooks directory. Idempotent.
 #
 # Usage: setup-hooks.sh [--project <dir>] [--copy]

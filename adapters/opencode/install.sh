@@ -24,7 +24,9 @@ TMP="$(mktemp)"
 
 # Remove a previous skills block, keeping everything else
 if [ -f "$TARGET" ]; then
-  awk '/<!-- dev-environment:skills:start -->/{skip=1} !skip{print} /<!-- dev-environment:skills:end -->/{skip=0}' \
+  # dev-environment is the pre-rename marker — matched so an older block is
+  # replaced rather than left behind alongside the new one.
+  awk '/<!-- dev-(qual|environment):skills:start -->/{skip=1} !skip{print} /<!-- dev-(qual|environment):skills:end -->/{skip=0}' \
     "$TARGET" >"$TMP"
 else
   : >"$TMP"
@@ -32,15 +34,15 @@ fi
 
 # Append the current skills routing block, generated from skills/index.md
 {
-  echo '<!-- dev-environment:skills:start -->'
+  echo '<!-- dev-qual:skills:start -->'
   echo ''
   echo '## Skills (multi-step task playbooks)'
   echo ''
   echo 'Match the task against a trigger below, then follow that SKILL.md literally.'
   echo ''
-  # Reuse the index entries; point them at the dev-environment path
-  grep '^- \[' "$REPO/skills/index.md" | sed 's|(\(.*\))|(dev-environment/skills/\1)|'
-  echo '<!-- dev-environment:skills:end -->'
+  # Reuse the index entries; point them at the dev-qual path
+  grep '^- \[' "$REPO/skills/index.md" | sed 's|(\(.*\))|(dev-qual/skills/\1)|'
+  echo '<!-- dev-qual:skills:end -->'
 } >>"$TMP"
 
 mv "$TMP" "$TARGET"

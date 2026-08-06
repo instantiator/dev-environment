@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Interactive installer: wires dev-environment guidance, skills, and hooks
+# Interactive installer: wires dev-qual guidance, skills, and hooks
 # into a target project. Re-runnable; merges rather than clobbers.
 #
 # Usage: install.sh [--project <dir>] [--tier local|remote] [--platforms <list>] [--hooks yes|no] [--yes]
-#   --project <dir>    target repo (default: parent of this dev-environment checkout)
+#   --project <dir>    target repo (default: parent of this dev-qual checkout)
 #   --tier             agent tier for AGENTS.md: local (small-context) or remote
 #   --platforms        comma-separated: claude,opencode or none
 #   --hooks yes|no     install git hooks
@@ -52,22 +52,24 @@ case "$TIER" in local|remote) ;; *) echo "Tier must be 'local' or 'remote'" >&2;
 PLATFORMS="$(ask "$PLATFORMS" "Agent platforms to wire up (claude,opencode or none)?" "claude,opencode")"
 
 # 4. Merge the entry file into the project's AGENTS.md between markers,
-#    replacing a previous dev-environment block if present (re-runnable).
+#    replacing a previous dev-qual block if present (re-runnable).
 merge_block() {
   local target="$1" source="$2" tmp
   tmp="$(mktemp)"
-  if [ -f "$target" ] && grep -q '<!-- dev-environment:start -->' "$target"; then
-    awk '/<!-- dev-environment:start -->/{skip=1} !skip{print} /<!-- dev-environment:end -->/{skip=0}' \
+  # dev-environment is the pre-rename marker — still matched so re-running
+  # against an older install replaces that block instead of duplicating it.
+  if [ -f "$target" ] && grep -qE '<!-- dev-(qual|environment):start -->' "$target"; then
+    awk '/<!-- dev-(qual|environment):start -->/{skip=1} !skip{print} /<!-- dev-(qual|environment):end -->/{skip=0}' \
       "$target" >"$tmp"
   elif [ -f "$target" ]; then
     cp "$target" "$tmp"
     printf '\n' >>"$tmp"
-    echo "NOTE: $target existed — the dev-environment block was appended. Review the merge."
+    echo "NOTE: $target existed — the dev-qual block was appended. Review the merge."
   fi
   {
-    echo '<!-- dev-environment:start -->'
+    echo '<!-- dev-qual:start -->'
     cat "$source"
-    echo '<!-- dev-environment:end -->'
+    echo '<!-- dev-qual:end -->'
   } >>"$tmp"
   mv "$tmp" "$target"
   echo "Merged $(basename "$source") ($TIER tier) into $target"

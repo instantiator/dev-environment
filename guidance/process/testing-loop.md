@@ -26,7 +26,7 @@ unit tests always, heavier tiers where the change warrants them.
 
 ## The three gates
 
-`dev-environment/scripts/check.sh` has three modes. Anything you change in
+`dev-qual/scripts/check.sh` has three modes. Anything you change in
 response to a gate gets re-checked by that same gate — a fix is not exempt from
 the check that found it.
 
@@ -47,8 +47,8 @@ the check that found it.
 
 - **After every change**: unit tests (fast, no external services) — included in the full gate.
 - **After completing a task**: every other suite expected to take less than 1 minute
-  (`dev-environment/scripts/run-tests.sh all` discovers and runs the project's suites).
+  (`dev-qual/scripts/run-tests.sh all` discovers and runs the project's suites).
 - **Slower suites** (integration/e2e/smoke needing services): ask the user before running them, unless you are running the comprehensive gate at the end of the work.
 - Suite organisation and naming: [testing standards](../standards/testing.md).
 
-Do not rely on remembering this: install the git hooks (`dev-environment/scripts/setup-hooks.sh`) so pre-commit runs the fast checks and pre-push runs the full gate.
+Do not rely on remembering this: install the git hooks (`dev-qual/scripts/setup-hooks.sh`) so pre-commit runs the fast checks and pre-push runs the full gate.

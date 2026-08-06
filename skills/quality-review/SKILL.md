@@ -19,7 +19,7 @@ After a coding task, on request ("review this"), or when the quality gate report
 
 ## Steps
 
-1. Run `dev-environment/scripts/check.sh` — fix every FAIL it reports first (mechanical problems before judgment ones).
+1. Run `dev-qual/scripts/check.sh` — fix every FAIL it reports first (mechanical problems before judgment ones).
 2. Read `guidance/standards/pitfalls.md`, then review the diff for each pitfall (swallowed errors, stale comments, unconditioned TODOs, dead code, `any` casts).
 3. Look for improvements in modified *and adjacent* code:
    - simplify long functions (`guidance/standards/readability.md`);
@@ -34,7 +34,7 @@ After a coding task, on request ("review this"), or when the quality gate report
 
 ## Scripts
 
-- `dev-environment/scripts/check.sh` (`--comprehensive` at the end of a task)
+- `dev-qual/scripts/check.sh` (`--comprehensive` at the end of a task)
 - `npx aislop scan` (included in check.sh where available)
 
 ## Validate

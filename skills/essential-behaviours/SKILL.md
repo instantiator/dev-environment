@@ -24,15 +24,15 @@ Behaviours that live in an agent's memory get forgotten — especially by small-
 
 ## Steps
 
-1. Install the git hooks: `dev-environment/scripts/setup-hooks.sh` (add `--copy` if the project has its own hooks). This gives pre-commit → `check.sh --fast` and pre-push → full `check.sh`.
-2. For Claude Code: run `dev-environment/adapters/claude-code/install.sh` — installs skills into `.claude/skills/` and offers the automatic post-edit check hook.
-3. For OpenCode and other AGENTS.md-reading agents: run `dev-environment/adapters/opencode/install.sh` — injects the skills routing block into the project's AGENTS.md.
+1. Install the git hooks: `dev-qual/scripts/setup-hooks.sh` (add `--copy` if the project has its own hooks). This gives pre-commit → `check.sh --fast` and pre-push → full `check.sh`.
+2. For Claude Code: run `dev-qual/adapters/claude-code/install.sh` — installs skills into `.claude/skills/` and offers the automatic post-edit check hook.
+3. For OpenCode and other AGENTS.md-reading agents: run `dev-qual/adapters/opencode/install.sh` — injects the skills routing block into the project's AGENTS.md.
 4. Make sure an entry file from `agents-files/` is merged into the repo root (the installer does this; check it happened).
 
 ## Scripts
 
-- `dev-environment/scripts/setup-hooks.sh`
-- `dev-environment/adapters/claude-code/install.sh`, `dev-environment/adapters/opencode/install.sh`
+- `dev-qual/scripts/setup-hooks.sh`
+- `dev-qual/adapters/claude-code/install.sh`, `dev-qual/adapters/opencode/install.sh`
 
 ## Validate
 

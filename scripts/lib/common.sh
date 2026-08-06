@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for dev-environment scripts: project-type detection,
+# Shared helpers for dev-qual scripts: project-type detection,
 # tool checks, and PASS/FAIL/SKIP result reporting.
 # Source this file; do not execute it directly.
 

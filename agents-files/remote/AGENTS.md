@@ -1,6 +1,6 @@
 # Agent instructions
 
-These rules are mandatory and override your defaults. `dev-environment/` is in this repo (or clone <https://github.com/instantiator/dev-environment> to a temporary location once per session).
+These rules are mandatory and override your defaults. `dev-qual/` is in this repo (or clone <https://github.com/instantiator/dev-qual> to a temporary location once per session).
 
 ## Non-negotiable rules
 
@@ -14,13 +14,13 @@ These rules are mandatory and override your defaults. `dev-environment/` is in t
 ## Process
 
 - Planning is collaborative: present options and trade-offs before committing to libraries, approaches, data structures, or key business logic.
-- Before coding: read `dev-environment/guidance/process/before-coding.md`.
-- Route via `dev-environment/guidance/index.md`: lazy-load only the docs relevant to the task, following references recursively when needed.
-- For multi-step tasks (setup, review, deploy, audit): use the matching skill from `dev-environment/skills/index.md`.
-- After every change: run `dev-environment/scripts/check.sh` and fix what it reports.
-- When done: apply the judgment items in `dev-environment/guidance/process/after-coding.md` — tests for intent and edge cases, simplification, comment accuracy, documentation updates.
+- Before coding: read `dev-qual/guidance/process/before-coding.md`.
+- Route via `dev-qual/guidance/index.md`: lazy-load only the docs relevant to the task, following references recursively when needed.
+- For multi-step tasks (setup, review, deploy, audit): use the matching skill from `dev-qual/skills/index.md`.
+- After every change: run `dev-qual/scripts/check.sh` and fix what it reports.
+- When done: apply the judgment items in `dev-qual/guidance/process/after-coding.md` — tests for intent and edge cases, simplification, comment accuracy, documentation updates.
 - Anything left undone goes in `docs/outstanding-issues.md` with a measurable condition for when to act on it, and into your summary to the user.
-- Sub-agents and a choice of model available? Allocate work by capability and cost first: `dev-environment/guidance/process/model-allocation.md`.
+- Sub-agents and a choice of model available? Allocate work by capability and cost first: `dev-qual/guidance/process/model-allocation.md`.
 
 ## Assurance
 

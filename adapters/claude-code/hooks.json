@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash dev-environment/scripts/check.sh --fast"
+            "command": "bash dev-qual/scripts/check.sh --fast"
           }
         ]
       }

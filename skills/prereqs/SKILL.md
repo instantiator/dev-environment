@@ -19,7 +19,7 @@ A command fails because a tool is missing, or setting up a new machine/contribut
 
 ## Steps
 
-1. Run `dev-environment/scripts/check-prereqs.sh` — it detects every stack present, checks each tool, and prints the install command for anything missing.
+1. Run `dev-qual/scripts/check-prereqs.sh` — it detects every stack present, checks each tool, and prints the install command for anything missing.
 2. Show the user what is missing and what installing it would run. With their go-ahead, either run the printed commands or re-run with `--install`, which runs them and re-checks.
 3. Re-run `check-prereqs.sh` until everything required is green.
 4. For project-specific tools the script doesn't know (check the project README), verify with `command -v` and install the same way.
@@ -41,9 +41,9 @@ it and problems ship. The script checks these:
 
 ## Scripts
 
-- `dev-environment/scripts/check-prereqs.sh` (does 90% of the work); add `--install` to install what's missing.
+- `dev-qual/scripts/check-prereqs.sh` (does 90% of the work); add `--install` to install what's missing.
 
 ## Validate
 
 - `check-prereqs.sh` exits 0 (all required tools present).
-- `dev-environment/scripts/check.sh` runs without SKIPs caused by missing tools.
+- `dev-qual/scripts/check.sh` runs without SKIPs caused by missing tools.

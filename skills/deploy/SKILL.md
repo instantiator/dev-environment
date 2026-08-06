@@ -21,7 +21,7 @@ Deploying to an environment, cutting a release, or running the app locally for r
 ## Steps
 
 1. Discover the project's own mechanism first: deploy/start scripts in `scripts/` or `package.json`, compose files, IaC directories, CI deploy jobs. Use what exists; don't invent a parallel path.
-2. Run `dev-environment/scripts/check.sh` — never deploy a failing build.
+2. Run `dev-qual/scripts/check.sh` — never deploy a failing build.
 3. Local: `docker compose up -d --wait` or the project's start script; confirm required env files exist (`.env` from `.env.example`).
 4. Remote via IaC: follow `guidance/infra/verification.md` — lint, then review the plan/diff/change-set before applying. Unexpected destroys or IAM changes: stop and ask.
 5. Remote via CI: push/tag per the pipeline's convention; watch the run to completion.
@@ -30,7 +30,7 @@ Deploying to an environment, cutting a release, or running the app locally for r
 ## Scripts
 
 - The project's own deploy/start scripts (preferred).
-- `dev-environment/scripts/check.sh` as the pre-deploy gate.
+- `dev-qual/scripts/check.sh` as the pre-deploy gate.
 
 ## Validate
 

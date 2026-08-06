@@ -24,7 +24,7 @@ tags: [shell, bash, scripting, cross-platform]
 ## Prerequisites
 
 - Check for required tools before using them: `command -v tool >/dev/null` — and on failure print the install command per OS (brew / apt / winget).
-- `dev-environment/scripts/check-prereqs.sh` does this for common project types; reuse it rather than re-implementing.
+- `dev-qual/scripts/check-prereqs.sh` does this for common project types; reuse it rather than re-implementing.
 
 ## Verification
 
